@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import { useMediaQuery } from "usehooks-ts";
 
 import { cn } from "@/lib/utils";
+import { UserItem } from "./user-item";
 
 export const Navigation = () => {
   const { pathname } = useLocation();
@@ -114,7 +115,7 @@ export const Navigation = () => {
           <ChevronsLeft className="w-6 h-6" />
         </div>
         <div>
-          <p>Action items</p>
+          <UserItem />
         </div>
         <div className="mt-4">
           <p>Documents</p>
