@@ -1,4 +1,4 @@
-import { ChevronsLeft, MenuIcon, PlusCircle, Search, Settings } from "lucide-react";
+import { ChevronsLeft, MenuIcon, Plus, PlusCircle, Search, Settings } from "lucide-react";
 import React, { ElementRef, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useMediaQuery } from "usehooks-ts";
@@ -151,6 +151,11 @@ export const Navigation = () => {
         </div>
         <div className="mt-4">
           <DocumentList />
+          <Item 
+            onClick={handleCreate}
+            icon={Plus}
+            label="Add a page"
+          />
         </div>
         <div 
           onMouseDown={handleMouseDown}
