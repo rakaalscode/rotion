@@ -1,4 +1,5 @@
 import { Navigation } from "@/components/navigation";
+import { SearchCommand } from "@/components/search-command";
 import { Spinner } from "@/components/spinner";
 import { useConvexAuth } from "convex/react";
 import { Navigate, Outlet } from "react-router-dom";
@@ -22,6 +23,7 @@ const MainLayout = () => {
     <div className="h-full flex dark:bg-[#1f1f1f]">
       <Navigation />
       <main className="flex-1 h-full overflow-y-auto">
+        <SearchCommand />
         <Outlet />
       </main>
     </div>
