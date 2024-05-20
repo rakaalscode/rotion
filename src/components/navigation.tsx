@@ -1,4 +1,12 @@
-import { ChevronsLeft, MenuIcon, Plus, PlusCircle, Search, Settings } from "lucide-react";
+import {
+  ChevronsLeft,
+  MenuIcon,
+  Plus,
+  PlusCircle,
+  Search,
+  Settings,
+  Trash,
+} from "lucide-react";
 import React, { ElementRef, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useMediaQuery } from "usehooks-ts";
@@ -6,15 +14,17 @@ import { useMediaQuery } from "usehooks-ts";
 import { cn } from "@/lib/utils";
 import { UserItem } from "./user-item";
 import { useMutation } from "convex/react";
-import { api } from "@convex/_generated/api"
+import { api } from "@convex/_generated/api";
 import { Item } from "./item";
 import { toast } from "sonner";
 import { DocumentList } from "./document-list";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { TrashBox } from "./trash-box";
 
 export const Navigation = () => {
   const { pathname } = useLocation();
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const create = useMutation(api.documents.create)
+  const create = useMutation(api.documents.create);
 
   const isResizingRef = useRef(false);
   const sidebarRef = useRef<ElementRef<"aside">>(null);
@@ -28,50 +38,52 @@ export const Navigation = () => {
     } else {
       resetWidth();
     }
-  
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMobile]);
-  
+
   useEffect(() => {
     if (isMobile) {
       collapse();
     }
-  
   }, [pathname, isMobile]);
 
   const handleMouseDown = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
-    event.preventDefault()
+    event.preventDefault();
     event.stopPropagation();
 
     isResizingRef.current = true;
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
-  }
+  };
 
   const handleMouseMove = (event: MouseEvent) => {
-    if(!isResizingRef.current) return;
+    if (!isResizingRef.current) return;
     let newWidth = event.clientX;
-    
-    if(newWidth < 240) newWidth = 240;
-    if(newWidth > 480) newWidth = 480;
 
-    if(sidebarRef.current && navbarRef.current) {
+    if (newWidth < 240) newWidth = 240;
+    if (newWidth > 480) newWidth = 480;
+
+    if (sidebarRef.current && navbarRef.current) {
       sidebarRef.current.style.width = `${newWidth}px`;
       navbarRef.current.style.setProperty("left", `${newWidth}px`);
-      navbarRef.current.style.setProperty("width", `calc(100% - ${newWidth}px)`);
+      navbarRef.current.style.setProperty(
+        "width",
+        `calc(100% - ${newWidth}px)`
+      );
     }
-  }
+  };
 
   const handleMouseUp = () => {
     isResizingRef.current = false;
-    document.removeEventListener("mousemove", handleMouseMove)
-    document.removeEventListener("mouseup", handleMouseUp)
-  }
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
+  };
 
   const resetWidth = () => {
-    if(sidebarRef.current && navbarRef.current) {
+    if (sidebarRef.current && navbarRef.current) {
       setIsCollapsed(false);
       setIsResetting(true);
 
@@ -80,16 +92,13 @@ export const Navigation = () => {
         "width",
         isMobile ? "0" : "calc(100% - 240px)"
       );
-      navbarRef.current.style.setProperty(
-        "left",
-        isMobile ? "100%" : "240px"
-      );
+      navbarRef.current.style.setProperty("left", isMobile ? "100%" : "240px");
       setTimeout(() => setIsResetting(false), 300);
     }
-  }
+  };
 
   const collapse = () => {
-    if(sidebarRef.current && navbarRef.current) {
+    if (sidebarRef.current && navbarRef.current) {
       setIsCollapsed(true);
       setIsResetting(true);
 
@@ -98,7 +107,7 @@ export const Navigation = () => {
       navbarRef.current.style.setProperty("left", "0");
       setTimeout(() => setIsResetting(false), 300);
     }
-  }
+  };
 
   const handleCreate = () => {
     const promise = create({ title: "Untitled" });
@@ -106,7 +115,7 @@ export const Navigation = () => {
     toast.promise(promise, {
       loading: "Creating a new note...",
       success: "New note created!",
-      error: "Failed to create a new note."
+      error: "Failed to create a new note.",
     });
   };
 
@@ -132,35 +141,29 @@ export const Navigation = () => {
         </div>
         <div>
           <UserItem />
-          <Item 
-            label="Search"
-            icon={Search}
-            isSearch
-            onClick={() => {}}
-          />
-          <Item 
-            label="Settings"
-            icon={Settings}
-            onClick={() => {}}
-          />
-          <Item 
-            onClick={handleCreate} 
-            label="New page" 
-            icon={PlusCircle}
-          />
+          <Item label="Search" icon={Search} isSearch onClick={() => {}} />
+          <Item label="Settings" icon={Settings} onClick={() => {}} />
+          <Item onClick={handleCreate} label="New page" icon={PlusCircle} />
         </div>
         <div className="mt-4">
           <DocumentList />
-          <Item 
-            onClick={handleCreate}
-            icon={Plus}
-            label="Add a page"
-          />
+          <Item onClick={handleCreate} icon={Plus} label="Add a page" />
+          <Popover>
+            <PopoverTrigger className="w-full mt-4">
+              <Item label="Trash" icon={Trash} />
+            </PopoverTrigger>
+            <PopoverContent
+              className="p-0 w-72"
+              side={isMobile ? "bottom" : "right"}
+            >
+              <TrashBox />
+            </PopoverContent>
+          </Popover>
         </div>
-        <div 
+        <div
           onMouseDown={handleMouseDown}
           onClick={resetWidth}
-          className="absolute top-0 right-0 w-1 h-full transition opacity-0 cursor-ew-resize bg-primary/10 group-hover/sidebar:opacity-100" 
+          className="absolute top-0 right-0 w-1 h-full transition opacity-0 cursor-ew-resize bg-primary/10 group-hover/sidebar:opacity-100"
         />
       </aside>
       <div
@@ -172,8 +175,13 @@ export const Navigation = () => {
         )}
       >
         <nav className="w-full px-3 py-2 bg-transparent">
-          {isCollapsed && <MenuIcon onClick={resetWidth}
-          role="button" className="w-6 h-6 text-muted-foreground" />}
+          {isCollapsed && (
+            <MenuIcon
+              onClick={resetWidth}
+              role="button"
+              className="w-6 h-6 text-muted-foreground"
+            />
+          )}
         </nav>
       </div>
     </>
