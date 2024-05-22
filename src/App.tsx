@@ -3,8 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import RootLayout from "./_root/root-layout";
 import MainLayout from "./_main/main-layout";
 import { Landing } from "./_root/pages";
-import { Documents } from "./_main/pages";
-
+import { DocumentId, Documents } from "./_main/pages";
 
 import "./index.css";
 
@@ -23,6 +22,7 @@ function App() {
 
       <Route element={<MainLayout />}>
         <Route path="/documents" element={<Documents />} />
+        <Route path="/documents/:documentId" element={<DocumentId />} />
       </Route>
 
       <Route path="*" element={<h1>Page not found</h1>} />
